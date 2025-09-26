@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  backend:
+    volumes:
+      - ./backend:/workspace/backend
+    environment:
+      - DEBUG=1
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --log-level debug
+
+  frontend:
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - FAST_REFRESH=false
+    command: npm start
