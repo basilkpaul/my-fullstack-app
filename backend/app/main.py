@@ -11,14 +11,19 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Full Stack API",
-    description="A simple API for a full stack application",
+    description="A complete full stack application API",
     version="1.0.0"
 )
 
-# CORS middleware
+# CORS middleware - Updated for better Codespaces support
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://*.githubpreview.dev"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://*.githubpreview.dev",
+        "https://*.github.dev",
+        "https://*.app.github.dev"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,11 +31,11 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Full Stack API"}
+    return {"message": "Welcome to Full Stack API", "status": "running"}
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "database": "connected"}
 
 # User endpoints
 @app.post("/users/", response_model=schemas.User)

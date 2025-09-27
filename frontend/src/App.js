@@ -10,10 +10,22 @@ function App() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [apiStatus, setApiStatus] = useState('checking');
 
   useEffect(() => {
+    checkApiHealth();
     fetchUsers();
   }, []);
+
+  const checkApiHealth = async () => {
+    try {
+      await axios.get(`${API_URL}/health`);
+      setApiStatus('connected');
+    } catch (err) {
+      setApiStatus('disconnected');
+      console.error('API health check failed:', err);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -22,7 +34,7 @@ function App() {
       setUsers(response.data);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch users');
+      setError('Failed to fetch users. Make sure the backend is running.');
       console.error('Error fetching users:', err);
     } finally {
       setLoading(false);
@@ -38,6 +50,11 @@ function App() {
       <header className="App-header">
         <h1>Full Stack Application</h1>
         <p>PostgreSQL + FastAPI + React</p>
+        <div className={`status ${apiStatus}`}>
+          API Status: {apiStatus === 'connected' ? '🟢 Connected' : 
+                       apiStatus === 'disconnected' ? '🔴 Disconnected' : 
+                       '🟡 Checking...'}
+        </div>
       </header>
       
       <main className="App-main">
@@ -51,7 +68,7 @@ function App() {
             <h2>Users ({users.length})</h2>
             {error && <div className="error">{error}</div>}
             {loading ? (
-              <div className="loading">Loading...</div>
+              <div className="loading">Loading users...</div>
             ) : (
               <UserList users={users} onRefresh={fetchUsers} />
             )}
